@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HPBU Tester</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script src="js/lib/Chart.js"></script>
+<script src="js/lib/jquery-3.1.1.min.js"></script>
+<script src="js/lib/jquery-ui.js"></script>
+<script src="js/lib/math.min.js"></script>
+
+<link rel="stylesheet" href="css/jquery-ui.css">
+<style type="text/css">
+#box {
+	width: 900px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left
+}
+
+#canvasDiv {
+	width: 800px;
+	height: 400px;
+	padding: 50px;
+	border: 1px solid gray;
+	background-color: rgba(0, 0, 0, 0);
+	z-index: 0;
+	border: 1px solid gray;
+}
+
+#myChart {
+	width: 800px;
+	height: 400px;
+	background-color: rgba(0, 0, 0, 0);
+}
+
+#table {
+	width: 600px;
+}
+</style>
+
+<script>
+    $(function() {
+	$("#startdatepicker").datepicker({
+	    dateFormat : 'yy-mm-dd'
+	});
+	$("#enddatepicker").datepicker({
+	    dateFormat : 'yy-mm-dd'
+	});
+    });
+</script>
+</head>
+<body>
+	<div id="box">
+		<div>
+			<p>
+				<label for="bookdate">日期查詢：</label> <input type="text"
+					id="startdatepicker"> ~ <input type="text"
+					id="enddatepicker">
+				<button id="sumitBtn">確定</button>
+		</div>
+
+		<div>
+			<table id="table" border=1>
+				<tr>
+					<td>MAX：<label id="maxlight"></label></td>
+					<td>MIN：<label id="minlight"></label></td>
+				</tr>
+				<tr>
+					<td>AVE：<label id="average"></label></td>
+					<td>STD：<label id="standard"></label></td>
+				</tr>
+			</table>
+		</div>
+
+		<div id="canvasDiv">
+			<canvas id="myChart"></canvas>
+		</div>
+		<button id="btnPDF">匯出PDF</button>
+		<p>
+		<p>
+	</div>
+	<script src="js/app/ChartConfig.js"></script>
+	<script src="js/app/Utils.js"></script>
+	<script>
+	$('#sumitBtn').click(function drawBarChart() {
+	    var mType = "DHD850";
+	    var sTime = document.getElementById("startdatepicker").value;
+	    var eTime = document.getElementById("enddatepicker").value;
+
+	    var titleStr = "DHD850 " + sTime + " - " + eTime;
+	    var s = new Date(sTime);
+	    var e = new Date(eTime);
+	    if (s.dateDiff("m", e) > 12 || s.dateDiff("m", e) == null) {
+		alert("日期錯誤或超過12個月!");
+		return;
+	    }
+	    jsonData = $.ajax({
+		// url : 'http://192.168.3.88:8080/RestfulTest/api/v1/service/chroma',
+		url : 'http://localhost:8080/LACSProj/api/v1/service/chroma',
+		type : "POST",
+		data : {
+		    modelType : mType,
+		    startTime : sTime,
+		    endTime : eTime
+		},
+		dataType : 'json',
+		success : function(chartJsonData) {
+		    // Split timestamp and data into
+		    // separate arrays
+		    if (chartJsonData == null) {
+			alert("沒有資料喔！請確認一下查詢時間，或連絡系統管理員。");
+			return;
+		    }
+		    var dateList = chartJsonData.dateList;
+		    var timeList = chartJsonData.timeList;
+		    var productNoList = chartJsonData.productNoList;
+		    var lumenList = chartJsonData.lumenList;
+		    var barLebels = chartJsonData.barLabels;
+		    var barValues = chartJsonData.barValues;
+
+		    // bar color
+		    var r, g, b;
+		    var backColor = [];
+		    var borderColor = [];
+		    for (var i = 0; i < barLebels.length; i++) {
+			r = randomColorFactor();
+			g = randomColorFactor();
+			b = randomColorFactor();
+			backColor.push('rgba(' + r + "," + g + "," + b + ",0.5)");
+			borderColor.push('rgba(' + r + "," + g + "," + b + ",1)");
+		    }
+
+		    // insert html value
+		    var maxValue = Math.max.apply(null, lumenList);
+		    var minValue = Math.min.apply(null, lumenList);
+		    var avgValue = Math.round(math.mean(lumenList));
+		    var stdValue = Math.round(math.std(lumenList));
+
+		    document.getElementById('maxlight').innerHTML = maxValue;
+		    document.getElementById('minlight').innerHTML = minValue;
+		    document.getElementById('average').innerHTML = avgValue;
+		    document.getElementById('standard').innerHTML = stdValue;
+		    // get canvas
+		    var ctx = document.getElementById("myChart").getContext("2d");
+
+		    // 平均線位置
+		    var uslValue = 7350;
+		    var lslValue = 6200;
+		    var distance = Math.floor((maxValue - minValue) / 10);
+		    if(distance <= 0){
+			distance = 50;
+		    }
+		    var avgIndex = (avgValue - minValue) / distance + 1.5;
+		    var uslIndex = (uslValue - minValue) / distance + 1.5;
+		    var lslIndex = (lslValue - minValue) / distance + 1.5;
+
+		    if (uslIndex > 12) {
+			uslIndex = 12.5;
+		    } else if (uslIndex <= 0) {
+			uslIndex = 0.5;
+		    }
+		    if (lslIndex > 12) {
+			lslIndex = 12.5;
+		    } else if (lslIndex <= 0) {
+			lslIndex = 0.5;
+		    }
+
+		    var type = "bar";
+		    var title = "DHD850 Brightness";
+		    var label = "台數：";
+		    var categories = barLebels;
+		    var data = barValues;
+		    var color = backColor;
+		    var config = getNewConfig(color, type, title, label, categories, data);
+		    config.data.lineAtIndex = avgIndex;
+		    config.data.uslAtIndex = uslIndex;
+		    config.data.lslAtIndex = lslIndex;
+
+		    // show bar value
+		    config.options.animation.onComplete = function() {
+			var ctx = this.chart.ctx;
+			ctx.font = "14px Arial";
+			ctx.fillStyle = "#0000FF";
+			ctx.textAlign = "center";
+			ctx.textBaseline = "bottom";
+			var chart = this;
+			var datasets = this.config.data.datasets;
+
+			datasets.forEach(function(dataset, i) {
+			    chart.getDatasetMeta(i).data.forEach(function(p, j) {
+				ctx.fillText(datasets[i].data[j], p._model.x, p._model.y);
+			    });
+			});
+		    }
+
+		    if (window.bar != undefined) {
+			window.bar.destroy();
+		    }
+		    window.bar = new Chart(ctx, config);
+
+		    // show average line
+		    var originalLineDraw = Chart.controllers.bar.prototype.draw;
+		    Chart.helpers.extend(Chart.controllers.bar.prototype, {
+			draw : function() {
+			    originalLineDraw.apply(this, arguments);
+			    var chart = this.chart;
+			    var avgindex = chart.config.data.lineAtIndex;
+			    var uslindex = chart.config.data.uslAtIndex;
+			    var lslindex = chart.config.data.lslAtIndex;
+
+			    drawLine(chart, avgindex, avgValue, false, "#FF0000");
+			    drawLine(chart, uslindex, uslValue, true, "#000000");
+			    drawLine(chart, lslindex, lslValue, true, "#000000");
+			}
+		    });
+
+		},
+
+		error : function() {
+		    alert("ERROR!!!");
+		}
+	    });
+	});
+
+	var drawLine = function(chart, index, value, lineDash, lineColor) {
+	    if (index) {
+		var ctx = chart.chart.ctx;
+		var xaxis = chart.scales['x-axis-0'];
+		var yaxis = chart.scales['y-axis-0'];
+		if (lineDash) {
+		    ctx.setLineDash([ 5, 5 ]);
+		} else {
+		    ctx.setLineDash([ 0, 0 ]);
+		}
+		ctx.save();
+		ctx.beginPath();
+		ctx.moveTo(xaxis.getPixelForValue(undefined, index), yaxis.top);
+		ctx.strokeStyle = lineColor;
+		ctx.lineTo(xaxis.getPixelForValue(undefined, index), yaxis.bottom);
+		var x = xaxis.getPixelForValue(undefined, index);
+		var y = yaxis.top;
+		ctx.textAlign = "center";
+		ctx.textBaseline = "bottom";
+		ctx.clearRect(x - 25, y - 20, 50, 20);
+		ctx.fillStyle = lineColor;
+		ctx.font = "14px Arial";
+		ctx.fillText(value, x, y);
+		ctx.stroke();
+		ctx.restore();
+	    }
+	};
+    </script>
+
+</body>
+</html>

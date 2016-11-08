@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HPBU Tester</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script src="js/lib/Chart.js"></script>
+<script src="js/lib/jquery-3.1.1.min.js"></script>
+<script src="js/lib/jquery-ui.js"></script>
+
+<link rel="stylesheet" href="css/jquery-ui.css">
+
+<script>
+	$(function() {
+		$("#startdatepicker").datepicker({
+			dateFormat : 'yy-mm-dd'
+		});
+		$("#enddatepicker").datepicker({
+			dateFormat : 'yy-mm-dd'
+		});
+	});
+</script>
+</head>
+<body>
+	<div>
+		<p>
+			<label for="bookdate">日期查詢：</label> <input type="text"
+				id="startdatepicker"> ~ <input type="text"
+				id="enddatepicker">
+			<button id="sumitBtn">確定</button>
+	</div>
+	<div>
+		<table border="1" width="600">
+			<tr>
+				<td><label>MAX：</label><label id="maxlight"></label></td>
+				<td><lable>MIN：</lable><label id="minlight"></label></td>
+			</tr>
+			<tr>
+				<td><lable>AVE：</lable><label id="average"></label></td>
+				<td><lable>STD：</lable><label id="standard"></label></td>
+			</tr>
+		</table>
+	</div>
+	<div id="graph-container" width="600">
+		<canvas id="myChart" width="600" height="480"></canvas>
+	</div>
+	<script src="js/app/bubbleChart.js"></script>
+
+</body>
+</html>
