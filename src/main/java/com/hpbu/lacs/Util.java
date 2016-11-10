@@ -12,10 +12,10 @@ import javax.xml.stream.events.StartDocument;
 
 public class Util {
 
-	public static LinkedHashMap<Integer, Integer> getChartData(List<Integer> lumen) {
-		LinkedHashMap<Integer, Integer> chartMap = new LinkedHashMap<>();
-		int maxValue = Collections.max(lumen);
-		int minValue = Collections.min(lumen);
+	public static LinkedHashMap<Float, Integer> getIntGroupData(List<Integer> list) {
+		LinkedHashMap<Float, Integer> chartMap = new LinkedHashMap<>();
+		int maxValue = Collections.max(list);
+		int minValue = Collections.min(list);
 		int increase = (maxValue - minValue) / 10;
 		if(increase <= 0){
 			increase = 50;
@@ -24,14 +24,45 @@ public class Util {
 
 		try {
 
-			for (int value : lumen) {
+			for (int value : list) {
 				// value > baseline
 				int	key = (value - minValue) / increase;
 				count[key]++;
 			}
-			chartMap.put(minValue - increase, 0);
+			chartMap.put((float) (minValue - increase), 0);
 			for (int i = 0; i < 11; i++) {
 				int title = minValue + increase * i;
+				chartMap.put((float) title, count[i]);
+			}
+			chartMap.put((float) (minValue + increase * 11), 0);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return chartMap;
+	}
+	
+	public static LinkedHashMap<Float, Integer> getFloatGroupData(List<Float> list) {
+		LinkedHashMap<Float, Integer> chartMap = new LinkedHashMap<>();
+		float maxValue = Collections.max(list);
+		float minValue = Collections.min(list);
+		float increase = (maxValue - minValue) / 10;
+		if(increase <= 0){
+			increase = 50;
+		}
+		int[] count = new int[11];
+
+		try {
+
+			for (Float value : list) {
+				// value > baseline
+				int	key = (int)((value - minValue) / increase);
+				count[key]++;
+			}
+			chartMap.put(minValue - increase, 0);
+			for (int i = 0; i < 11; i++) {
+				float title = minValue + increase * i;
 				chartMap.put(title, count[i]);
 			}
 			chartMap.put(minValue + increase * 11, 0);

@@ -6,7 +6,7 @@ public class ChromaObj {
 	private String MODEL_NO;
 	private String PRODUCT_SN;
 	private String ANSI_LUMEN;
-
+	private String W_Color_Uniformity;
 	public ChromaObj() {
 
 	}
@@ -70,6 +70,14 @@ public class ChromaObj {
 	}
 
 
+
+	public String getW_Color_Uniformity() {
+		return W_Color_Uniformity;
+	}
+
+	public void setW_Color_Uniformity(String w_Color_Uniformity) {
+		W_Color_Uniformity = w_Color_Uniformity;
+	}
 
 	@Override
 	public String toString() {

@@ -10,8 +10,10 @@ public class ReportObj {
 	List<String> timeList;
 	List<String> productNoList;
 	List<Integer> lumenList;
-	List<Integer> barLabels;
+	List<Float> barLabels;
 	List<Integer> barValues;
+	List<Float> deltaUvList;
+
 
 	public List<String> getDateList() {
 		return dateList;
@@ -45,11 +47,11 @@ public class ReportObj {
 		this.lumenList = lumenList;
 	}
 
-	public List<Integer> getBarLabels() {
+	public List<Float> getBarLabels() {
 		return barLabels;
 	}
 
-	public void setBarLabels(List<Integer> barLabels) {
+	public void setBarLabels(List<Float> barLabels) {
 		this.barLabels = barLabels;
 	}
 
@@ -59,6 +61,14 @@ public class ReportObj {
 
 	public void setBarValues(List<Integer> barValues) {
 		this.barValues = barValues;
+	}
+
+	public List<Float> getDeltaUvList() {
+		return deltaUvList;
+	}
+
+	public void setDeltaUvList(List<Float> deltaUvList) {
+		this.deltaUvList = deltaUvList;
 	}
 
 }
