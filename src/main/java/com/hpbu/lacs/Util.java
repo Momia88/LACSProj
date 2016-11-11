@@ -17,7 +17,7 @@ public class Util {
 		int maxValue = Collections.max(list);
 		int minValue = Collections.min(list);
 		int increase = (maxValue - minValue) / 10;
-		if(increase <= 0){
+		if (increase <= 0) {
 			increase = 50;
 		}
 		int[] count = new int[11];
@@ -26,7 +26,7 @@ public class Util {
 
 			for (int value : list) {
 				// value > baseline
-				int	key = (value - minValue) / increase;
+				int key = (value - minValue) / increase;
 				count[key]++;
 			}
 			chartMap.put((float) (minValue - increase), 0);
@@ -42,13 +42,14 @@ public class Util {
 
 		return chartMap;
 	}
-	
+
 	public static LinkedHashMap<Float, Integer> getFloatGroupData(List<Float> list) {
 		LinkedHashMap<Float, Integer> chartMap = new LinkedHashMap<>();
+		float USL = (float) 0.016;
 		float maxValue = Collections.max(list);
 		float minValue = Collections.min(list);
-		float increase = (maxValue - minValue) / 10;
-		if(increase <= 0){
+		float increase = (float) ((maxValue - minValue) / 10);
+		if (increase <= 0) {
 			increase = 50;
 		}
 		int[] count = new int[11];
@@ -57,7 +58,7 @@ public class Util {
 
 			for (Float value : list) {
 				// value > baseline
-				int	key = (int)((value - minValue) / increase);
+				int key = (int) ((value - minValue) / increase);
 				count[key]++;
 			}
 			chartMap.put(minValue - increase, 0);

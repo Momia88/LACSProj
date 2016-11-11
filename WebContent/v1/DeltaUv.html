@@ -154,16 +154,16 @@
 						var ctx = document.getElementById("myChart").getContext("2d");
 
 						// 平均線位置
-						var uslValue = 0;
-						var lslValue = 1;
-						var distance = Math.floor((maxValue - minValue) / 10);
+						var uslValue = 0.016;
+						var lslValue = 0;
+						var distance = (maxValue - minValue) / 10;
 						if (distance <= 0) {
 							distance = 50;
 						}
 						var avgIndex = (avgValue - minValue) / distance + 1.5;
 						var uslIndex = (uslValue - minValue) / distance + 1.5;
 						var lslIndex = (lslValue - minValue) / distance + 1.5;
-
+						
 						if (uslIndex > 12) {
 							uslIndex = 12.5;
 						} else if (uslIndex <= 0) {
