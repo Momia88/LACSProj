@@ -53,26 +53,41 @@
 		<div id="box">
 			<div>
 				<p>
-					<label for="bookdate">日期查詢：</label>
-					<input type="text"
-					id="startdatepicker">
+					日期查詢：
+					<input type="text" id="startdatepicker">
 					~
-					<input type="text"
-					id="enddatepicker">
-					<button id="sumitBtn">
-						確定
-					</button>
+					<input type="text" id="enddatepicker" >
+					<br/>
+					Model Type:
+					<input type="text" id="modelType" >
+					Chart Type :
+					<select id="chartType">
+						<option value="brightness">brightness</option>
+						<option value="delta_uv">delta_uv</option>
+						<option value="cct">cct</option>
+						<option value="contrast_ratio">contrast_ratio</option>
+						<option value="white_color">white_color</option>
+						<option value="red_color">red_color</option>
+						<option value="green_color">green_color</option>
+						<option value="blue_color">blue_color</option>
+					</select>
+					<br/>
+					上限:
+					<input type="text" id="uslValue" >
+					下限:
+					<input type="text" id="lslValue" >
+					<input type="submit" id="sumitBtn" value="提交" />
 			</div>
 
 			<div>
 				<table id="table" border=1>
 					<tr>
-						<td>MAX：<label id="maxlight"></label></td>
-						<td>MIN：<label id="minlight"></label></td>
+						<td>MAX：<label id="maxlight"> </label></td>
+						<td>MIN：<label id="minlight"> </label></td>
 					</tr>
 					<tr>
-						<td>AVE：<label id="average"></label></td>
-						<td>STD：<label id="standard"></label></td>
+						<td>AVE：<label id="average"> </label></td>
+						<td>STD：<label id="standard"> </label></td>
 					</tr>
 				</table>
 			</div>
@@ -83,18 +98,19 @@
 			<button id="btnPDF">
 				匯出PDF
 			</button>
-			<p><p>
+			<br />
 		</div>
 		<script src="js/app/ChartConfig.js"></script>
 		<script src="js/app/Utils.js"></script>
 		<script>
 			$('#sumitBtn').click(function drawBarChart() {
-				var mType = "DHD850";
-				var cType = "brightness";
+				// init params
+				var mType = document.getElementById("modelType").value;
+				var cType = document.getElementById("chartType").value;
 				var sTime = document.getElementById("startdatepicker").value;
 				var eTime = document.getElementById("enddatepicker").value;
 
-				var titleStr = "DHD850 " + sTime + " - " + eTime;
+				var titleStr = mType + sTime + " - " + eTime;
 				var s = new Date(sTime);
 				var e = new Date(eTime);
 				if (s.dateDiff("m", e) > 12 || s.dateDiff("m", e) == null) {
@@ -119,17 +135,14 @@
 							alert("沒有資料喔！請確認一下查詢時間，或連絡系統管理員。");
 							return;
 						}
-						var dateList = chartJsonData.dateList;
-						var timeList = chartJsonData.timeList;
-						var productNoList = chartJsonData.productNoList;
-						var lumenList = chartJsonData.lumenList;
-						var barLebels = chartJsonData.barLabels;
-						var barValues = chartJsonData.barValues;
+
+						var barLebels = chartJsonData.xLabels;
+						var barValues = chartJsonData.yValues;
 
 						// bar color
-						var r,
-						    g,
-						    b;
+						var r = 0;
+						var g = 0;
+						var b = 0;
 						var backColor = [];
 						var borderColor = [];
 						for (var i = 0; i < barLebels.length; i++) {
@@ -141,22 +154,20 @@
 						}
 
 						// insert html value
-						var maxValue = Math.max.apply(null, lumenList);
-						var minValue = Math.min.apply(null, lumenList);
-						var avgValue = Math.round(math.mean(lumenList));
-						var stdValue = Math.round(math.std(lumenList));
+						var maxValue = chartJsonData.maxValue;
+						var minValue = chartJsonData.minValue;
+						var avgValue = chartJsonData.avgValue;
+						var stdValue = chartJsonData.stdValue;
 
 						document.getElementById('maxlight').innerHTML = maxValue;
 						document.getElementById('minlight').innerHTML = minValue;
 						document.getElementById('average').innerHTML = avgValue;
 						document.getElementById('standard').innerHTML = stdValue;
-						// get canvas
-						var ctx = document.getElementById("myChart").getContext("2d");
 
 						// 平均線位置
-						var uslValue = 7350;
-						var lslValue = 6200;
-						var distance = Math.floor((maxValue - minValue) / 10);
+						var uslValue = document.getElementById("uslValue").value;
+						var lslValue = document.getElementById("lslValue").value;
+						var distance = (maxValue - minValue) / 10;
 						if (distance <= 0) {
 							distance = 50;
 						}
@@ -176,7 +187,7 @@
 						}
 
 						var type = "bar";
-						var title = "DHD850 Brightness";
+						var title = "DHD850 " + cType;
 						var label = "台數：";
 						var categories = barLebels;
 						var data = barValues;
@@ -201,10 +212,13 @@
 									ctx.fillText(datasets[i].data[j], p._model.x, p._model.y);
 								});
 							});
-						}
+						};
 						if (window.bar != undefined) {
 							window.bar.destroy();
 						}
+
+						canvas = document.getElementById('myChart');
+						var ctx = canvas.getContext("2d");
 						window.bar = new Chart(ctx, config);
 
 						// show average line
@@ -250,9 +264,9 @@
 					var y = yaxis.top;
 					ctx.textAlign = "center";
 					ctx.textBaseline = "bottom";
-					ctx.clearRect(x - 25, y - 20, 50, 20);
-					ctx.fillStyle = lineColor;
 					ctx.font = "14px Arial";
+					ctx.clearRect(x - 30, y - 20, 60, 20);
+					ctx.fillStyle = lineColor;
 					ctx.fillText(value, x, y);
 					ctx.stroke();
 					ctx.restore();

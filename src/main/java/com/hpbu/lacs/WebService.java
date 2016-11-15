@@ -1,7 +1,9 @@
 package com.hpbu.lacs;
 
 import java.sql.ResultSet;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -18,7 +20,7 @@ import com.google.gson.Gson;
 public class WebService {
 
 	private AccessManager accessManager = new AccessManager();
-	private DataParser  dataParser = new DataParser();
+	private DataParser dataParser = new DataParser();
 
 	@POST
 	@Path("/chroma")
@@ -26,153 +28,119 @@ public class WebService {
 	public String chroma(@FormParam("modelType") String modelType, @FormParam("chartType") String chartType,
 			@FormParam("startTime") String startTime, @FormParam("endTime") String endTime) {
 		String sqlStr = "";
-		System.out.println(chartType);
+		DecimalFormat df = null;
+		String key = "";
 		switch (chartType) {
 		case "brightness":
 			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, ANSI_LUMEN FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
 					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, ANSI_LUMEN ORDER BY P_DATE, TIME";
-			return getChromaBrightness(sqlStr, modelType, startTime, endTime);
-
+			df = new DecimalFormat("#");
+			key = "ANSI_LUMEN";
+			break;
 		case "delta_uv":
 			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_COLOR_UNIFORMITY FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
 					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_COLOR_UNIFORMITY ORDER BY P_DATE, TIME";
-			System.out.println(sqlStr);
-
-			return getChromaDeltaUV(sqlStr, modelType, startTime, endTime);
-
+			df = new DecimalFormat("#.####");
+			key = "W_Color_Uniformity";
+			break;
 		case "cct":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1CCT5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1CCT5 ORDER BY P_DATE, TIME";
+			df = new DecimalFormat("#");
+			key = "W_T1CCT5";
 			break;
-
 		case "contrast_ratio":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, Full_ON_OFF FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, Full_ON_OFF ORDER BY P_DATE, TIME";
+			df = new DecimalFormat("#");
+			key = "Full_ON_OFF";
 			break;
-
 		case "white_color":
 			sqlStr = "SELECT W_T1x1, W_T1x2, W_T1x3, W_T1x4, W_T1x5, W_T1x6, W_T1x7, W_T1x8, W_T1x9 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
 					+ "'"
 					+ " GROUP BY W_T1x1, W_T1x2, W_T1x3, W_T1x4, W_T1x5, W_T1x6, W_T1x7, W_T1x8, W_T1x9 ORDER BY P_DATE, TIME";
 			break;
-			
 		case "red_color":
 			break;
-			
 		case "green_color":
 			break;
-			
 		case "blue_color":
 			break;
-			
+
 		default:
+
 			break;
 		}
 
-		return "";
+		return getChroma(sqlStr, modelType, startTime, endTime, df, key);
+
 	}
 
-//	@POST
-//	@Path("/chroma/mysql")
-//	@Produces("application/json")
-//	public String chromaMysql(@FormParam("modelType") String modelType, @FormParam("startTime") String startTime,
-//			@FormParam("endTime") String endTime) {
-//
-//		// Mysql
-//		String sqlStr = "SELECT * FROM SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = " + "'" + modelType + "'"
-//				+ " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime + "'"
-//				+ " ORDER BY P_DATE, TIME";
-//
-//		String chroma = getChromaBrightness(sqlStr, modelType, startTime, endTime);
-//		return chroma;
-//	}
-
-	public String getChromaDeltaUV(String sqlStr, String modelType, String startTime, String endTime) {
-		// parameter init
-		String chroma = null;
-		ArrayList<ChromaObj> chromaList = new ArrayList<ChromaObj>();
-		ReportObj reportObj = new ReportObj();
-		List<String> dateList = new ArrayList<>();
-		List<String> timeList = new ArrayList<>();
-		List<String> productNoList = new ArrayList<>();
-		List<Float> deltaUvList = new ArrayList<>();
-
-		try {
-			ResultSet rs = accessManager.getDBData(sqlStr);
-			chromaList = dataParser.getUvList(rs);
-			
-			for (int i = 0; i < chromaList.size(); i++) {
-				dateList.add(chromaList.get(i).getP_DATE());
-				timeList.add(chromaList.get(i).getTIME());
-				productNoList.add(chromaList.get(i).getPRODUCT_SN());
-				float uv = Float.valueOf(chromaList.get(i).getW_Color_Uniformity());
-				deltaUvList.add(uv);
-			}
-
-			reportObj.setDateList(dateList);
-			reportObj.setTimeList(timeList);
-			reportObj.setProductNoList(productNoList);
-			reportObj.setDeltaUvList(deltaUvList);
-			
-			LinkedHashMap<Float, Integer> lumenGroup = Util.getFloatGroupData(deltaUvList);
-			List<Float> barLabels = new ArrayList<>();
-			barLabels.addAll(lumenGroup.keySet());
-			reportObj.setBarLabels(barLabels);
-			List<Integer> barValues = new ArrayList<>();
-			barValues.addAll(lumenGroup.values());
-			reportObj.setBarValues(barValues);
-			
-			Gson gson = new Gson();
-			chroma = gson.toJson(reportObj);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return chroma;
-	}
+	// @POST
+	// @Path("/chroma/mysql")
+	// @Produces("application/json")
+	// public String chromaMysql(@FormParam("modelType") String modelType,
+	// @FormParam("startTime") String startTime,
+	// @FormParam("endTime") String endTime) {
+	//
+	// // Mysql
+	// String sqlStr = "SELECT * FROM SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO =
+	// " + "'" + modelType + "'"
+	// + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" +
+	// endTime + "'"
+	// + " ORDER BY P_DATE, TIME";
+	//
+	// String chroma = getChromaBrightness(sqlStr, modelType, startTime,
+	// endTime);
+	// return chroma;
+	// }
 
 	// Get Brightness Data from DB
-	public String getChromaBrightness(String sqlStr, String modelType, String startTime, String endTime) {
+	public String getChroma(String sqlStr, String modelType, String startTime, String endTime, DecimalFormat df,
+			String key) {
 		// parameter init
 		String chroma = null;
 		ReportObj reportObj = new ReportObj();
-		List<String> dateList = new ArrayList<>();
-		List<String> timeList = new ArrayList<>();
-		List<String> productNoList = new ArrayList<>();
-		List<Integer> lumenList = new ArrayList<>();
+		List<Float> list = new ArrayList<>();
 		ArrayList<ChromaObj> chromaList = new ArrayList<ChromaObj>();
 
 		try {
 
 			ResultSet rs = accessManager.getDBData(sqlStr);
-			chromaList = dataParser.getBrightnessList(rs);
-			
+			chromaList = dataParser.getChromaList(rs, key);
+
 			for (int i = 0; i < chromaList.size(); i++) {
-				dateList.add(chromaList.get(i).getP_DATE());
-				timeList.add(chromaList.get(i).getTIME());
-				productNoList.add(chromaList.get(i).getPRODUCT_SN());
-				float light = Float.valueOf(chromaList.get(i).getANSI_LUMEN());
-				lumenList.add((int) light);
+				float light = Float.valueOf(chromaList.get(i).getV1());
+				list.add(Float.valueOf(df.format(light)));
 			}
-
-			reportObj.setDateList(dateList);
-			reportObj.setTimeList(timeList);
-			reportObj.setProductNoList(productNoList);
-			reportObj.setLumenList(lumenList);
-
-			LinkedHashMap<Float, Integer> lumenGroup = Util.getIntGroupData(lumenList);
-			List<Float> barLabels = new ArrayList<>();
-			barLabels.addAll(lumenGroup.keySet());
-			reportObj.setBarLabels(barLabels);
-			List<Integer> barValues = new ArrayList<>();
-			barValues.addAll(lumenGroup.values());
-			reportObj.setBarValues(barValues);
-
+			reportObj = getReportObj(list, df);
 			Gson gson = new Gson();
 			chroma = gson.toJson(reportObj);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return chroma;
+	}
+
+	private ReportObj getReportObj(List<Float> list, DecimalFormat df) {
+		LinkedHashMap<String, Integer> groupHash = Util.getGroupData(list, df);
+		ReportObj reportObj = new ReportObj();
+		List<String> xLabels = new ArrayList<>();
+		xLabels.addAll(groupHash.keySet());
+		reportObj.setxLabels(xLabels);
+		List<Integer> yValues = new ArrayList<>();
+		yValues.addAll(groupHash.values());
+		reportObj.setyValues(yValues);
+		reportObj.setMaxValue(String.valueOf(Collections.max(list)));
+		reportObj.setMinValue(String.valueOf(Collections.min(list)));
+		reportObj.setAvgValue(df.format(Util.getAvg(list)));
+		reportObj.setStdValue(df.format(Util.getSTD(list)));
+		return reportObj;
 	}
 
 	// Test

@@ -1,74 +1,62 @@
 package com.hpbu.lacs;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ReportObj {
 
-	List<String> dateList;
-	List<String> timeList;
-	List<String> productNoList;
-	List<Integer> lumenList;
-	List<Float> barLabels;
-	List<Integer> barValues;
-	List<Float> deltaUvList;
+	List<String> xLabels;
+	List<Integer> yValues;
+	String maxValue;
+	String minValue;
+	String avgValue;
+	String stdValue;
 
-
-	public List<String> getDateList() {
-		return dateList;
+	public List<String> getxLabels() {
+		return xLabels;
 	}
 
-	public void setDateList(List<String> dateList) {
-		this.dateList = dateList;
+	public void setxLabels(List<String> xLabels) {
+		this.xLabels = xLabels;
 	}
 
-	public List<String> getTimeList() {
-		return timeList;
+	public List<Integer> getyValues() {
+		return yValues;
 	}
 
-	public void setTimeList(List<String> timeList) {
-		this.timeList = timeList;
+	public void setyValues(List<Integer> yValues) {
+		this.yValues = yValues;
 	}
 
-	public List<String> getProductNoList() {
-		return productNoList;
+	public String getMaxValue() {
+		return maxValue;
 	}
 
-	public void setProductNoList(List<String> productNoList) {
-		this.productNoList = productNoList;
+	public void setMaxValue(String maxValue) {
+		this.maxValue = maxValue;
 	}
 
-	public List<Integer> getLumenList() {
-		return lumenList;
+	public String getMinValue() {
+		return minValue;
 	}
 
-	public void setLumenList(List<Integer> lumenList) {
-		this.lumenList = lumenList;
+	public void setMinValue(String minValue) {
+		this.minValue = minValue;
 	}
 
-	public List<Float> getBarLabels() {
-		return barLabels;
+	public String getAvgValue() {
+		return avgValue;
 	}
 
-	public void setBarLabels(List<Float> barLabels) {
-		this.barLabels = barLabels;
+	public void setAvgValue(String avgValue) {
+		this.avgValue = avgValue;
 	}
 
-	public List<Integer> getBarValues() {
-		return barValues;
+	public String getStdValue() {
+		return stdValue;
 	}
 
-	public void setBarValues(List<Integer> barValues) {
-		this.barValues = barValues;
-	}
-
-	public List<Float> getDeltaUvList() {
-		return deltaUvList;
-	}
-
-	public void setDeltaUvList(List<Float> deltaUvList) {
-		this.deltaUvList = deltaUvList;
+	public void setStdValue(String stdValue) {
+		this.stdValue = stdValue;
 	}
 
 }
