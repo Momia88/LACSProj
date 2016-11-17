@@ -18,7 +18,7 @@ public class DataParser {
 				chromaObj.setTIME(rs.getString("TIME"));
 				chromaObj.setMODEL_NO(rs.getString("MODEL_NO"));
 				chromaObj.setPRODUCT_SN(rs.getString("PRODUCT_SN"));
-				chromaObj.setV1(rs.getString(key));
+				chromaObj.setValue(rs.getString(key));
 				list.add(chromaObj);
 			}
 		} catch (SQLException e) {

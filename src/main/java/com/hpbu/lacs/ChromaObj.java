@@ -5,8 +5,7 @@ public class ChromaObj {
 	private String TIME;
 	private String MODEL_NO;
 	private String PRODUCT_SN;
-	private String v1;
-	private String v2;
+	private String value;
 	public ChromaObj() {
 
 	}
@@ -43,22 +42,12 @@ public class ChromaObj {
 		PRODUCT_SN = pRODUCT_SN;
 	}
 
-	public String getV1() {
-		return v1;
+	public String getValue() {
+		return value;
 	}
 
-	public void setV1(String v1) {
-		this.v1 = v1;
+	public void setValue(String value) {
+		this.value = value;
 	}
-
-	public String getV2() {
-		return v2;
-	}
-
-	public void setV2(String v2) {
-		this.v2 = v2;
-	}
-	
-	
 
 }

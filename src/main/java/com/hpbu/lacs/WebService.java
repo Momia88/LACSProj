@@ -59,21 +59,53 @@ public class WebService {
 			df = new DecimalFormat("#");
 			key = "Full_ON_OFF";
 			break;
-		case "white_color":
-			sqlStr = "SELECT W_T1x1, W_T1x2, W_T1x3, W_T1x4, W_T1x5, W_T1x6, W_T1x7, W_T1x8, W_T1x9 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+		case "white_color_p9":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, FLOOR((W_T1x1 + W_T1x2 + W_T1x3 + W_T1x4 + W_T1x5 + W_T1x6 + W_T1x7 + W_T1x8 + W_T1x9)/9) AS W_P9_TOTAL FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
 					+ "'"
-					+ " GROUP BY W_T1x1, W_T1x2, W_T1x3, W_T1x4, W_T1x5, W_T1x6, W_T1x7, W_T1x8, W_T1x9 ORDER BY P_DATE, TIME";
+					+ " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1x1, W_T1x2, W_T1x3, W_T1x4, W_T1x5, W_T1x6, W_T1x7, W_T1x8, W_T1x9 ORDER BY P_DATE, TIME";
+			key = "W_P9_TOTAL";
+			df = new DecimalFormat("#");
 			break;
-		case "red_color":
+		case "white_color_center":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
+					+ "'"
+					+ " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1x5 ORDER BY P_DATE, TIME";
+			key = "W_T1x5";
+			df = new DecimalFormat("#.####");
 			break;
-		case "green_color":
+		case "red_color_center":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, R_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
+					+ "'"
+					+ " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, R_T1x5 ORDER BY P_DATE, TIME";
+			key = "R_T1x5";
+			df = new DecimalFormat("#.####");
 			break;
-		case "blue_color":
+		case "green_color_center":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, G_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
+					+ "'"
+					+ " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, G_T1x5 ORDER BY P_DATE, TIME";
+			key = "G_T1x5";
+			df = new DecimalFormat("#.####");
 			break;
-
+		case "blue_color_center":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, B_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
+					+ "'"
+					+ " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, B_T1x5 ORDER BY P_DATE, TIME";
+			key = "B_T1x5";
+			df = new DecimalFormat("#.####");
+			break;
 		default:
-
+//			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, FLOOR((W_T1YY1 + W_T1YY2 + W_T1YY3 + W_T1YY4 + W_T1YY5 + W_T1YY6 + W_T1YY7 + W_T1YY8 + W_T1YY9)/9) AS W_P9_TOTAL FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+//					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
+//					+ "'"
+//					+ " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1YY1 , W_T1YY2 , W_T1YY3 , W_T1YY4 , W_T1YY5 , W_T1YY6 , W_T1YY7 , W_T1YY8 , W_T1YY9 ORDER BY P_DATE, TIME";
+//			key = "W_P9_TOTAL";
+//			df = new DecimalFormat("#");
 			break;
 		}
 
@@ -113,10 +145,9 @@ public class WebService {
 
 			ResultSet rs = accessManager.getDBData(sqlStr);
 			chromaList = dataParser.getChromaList(rs, key);
-
 			for (int i = 0; i < chromaList.size(); i++) {
-				float light = Float.valueOf(chromaList.get(i).getV1());
-				list.add(Float.valueOf(df.format(light)));
+				float value = Float.valueOf(chromaList.get(i).getValue());
+				list.add(Float.valueOf(df.format(value)));
 			}
 			reportObj = getReportObj(list, df);
 			Gson gson = new Gson();
