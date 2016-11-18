@@ -67,6 +67,7 @@ public class WebService {
 			key = "W_P9_TOTAL";
 			df = new DecimalFormat("#");
 			break;
+
 		case "white_color_center":
 			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
@@ -97,6 +98,18 @@ public class WebService {
 					+ "'"
 					+ " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, B_T1x5 ORDER BY P_DATE, TIME";
 			key = "B_T1x5";
+			df = new DecimalFormat("#.####");
+			break;
+		case "white_color_distribution":
+			df = new DecimalFormat("#.####");
+			break;
+		case "red_color_distribution":
+			df = new DecimalFormat("#.####");
+			break;
+		case "green_color_distribution":
+			df = new DecimalFormat("#.####");
+			break;
+		case "blue_color_distribution":
 			df = new DecimalFormat("#.####");
 			break;
 		default:
