@@ -4,3 +4,5 @@ bin/
 .settings/
 build/
 gradle/
+
+WebContent/v1/test/
