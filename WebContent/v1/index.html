@@ -9,6 +9,8 @@
 		<script src="js/lib/math.min.js"></script>
 
 		<link rel="stylesheet" href="css/jquery-ui.css">
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+
 		<style type="text/css">
 			#box {
 				width: 900px;
@@ -50,6 +52,7 @@
 		</script>
 	</head>
 	<body>
+		<div id="loading" style="display:none"></div>
 		<div id="box">
 			<div>
 				<p>
@@ -237,6 +240,12 @@
 
 					},
 
+					beforeSend : function() {
+						$('#loading').show();
+					},
+					complete : function() {
+						$('#loading').hide();
+					},
 					error : function() {
 						alert("ERROR!!!");
 					}
