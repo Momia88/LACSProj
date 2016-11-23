@@ -38,6 +38,7 @@ Date.prototype.dateDiff = function(interval, objDate) {
 
 $('#sumitBtn').click(function drawBarChart() {
 	var mType = "DHD850";
+	var cType = "brightness";
 	var sTime = document.getElementById("startdatepicker").value;
 	var eTime = document.getElementById("enddatepicker").value;
 
@@ -54,6 +55,7 @@ $('#sumitBtn').click(function drawBarChart() {
 		type : "POST",
 		data : {
 			modelType : mType,
+			chartType : cType,
 			startTime : sTime,
 			endTime : eTime
 		},
@@ -61,16 +63,13 @@ $('#sumitBtn').click(function drawBarChart() {
 		success : function(chartJsonData) {
 			// Split timestamp and data into
 			// separate arrays
-			var dateList = chartJsonData.dateList;
-			var timeList = chartJsonData.timeList;
-			var productNoList = chartJsonData.productNoList;
-			var lumenList = chartJsonData.lumenList;
-			var barLebels = chartJsonData.barLabels;
-			var barValues = chartJsonData.barValues;
+			var barLebels = chartJsonData.xLabels;
+			var barValues = chartJsonData.yValues;
 
-			var r,
-			    g,
-			    b;
+			// bar color
+			var r = 0;
+			var g = 0;
+			var b = 0;
 			var backColor = [];
 			var borderColor = [];
 			for (var i = 0; i < barLebels.length; i++) {
@@ -82,9 +81,10 @@ $('#sumitBtn').click(function drawBarChart() {
 			}
 
 			// insert html value
-			var avgValue = brightAvg(lumenList);
-			var maxValue = Math.max.apply(null, lumenList);
-			var minValue = Math.min.apply(null, lumenList);
+			var maxValue = chartJsonData.maxValue;
+			var minValue = chartJsonData.minValue;
+			var avgValue = chartJsonData.avgValue;
+			var stdValue = chartJsonData.stdValue;
 
 			document.getElementById('maxlight').innerHTML = maxValue;
 			document.getElementById('minlight').innerHTML = minValue;
@@ -100,67 +100,67 @@ $('#sumitBtn').click(function drawBarChart() {
 					data : [{
 						x : 0.2938,
 						y : 0.3130,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2931,
 						y : 0.3123,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2999,
 						y : 0.3220,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2946,
 						y : 0.3129,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2904,
 						y : 0.3066,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2904,
 						y : 0.3092,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2944,
 						y : 0.3190,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2941,
 						y : 0.3173,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2905,
 						y : 0.3097,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2939,
 						y : 0.3206,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2904,
 						y : 0.3113,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2965,
 						y : 0.3214,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2908,
 						y : 0.3111,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2926,
 						y : 0.3152,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2926,
 						y : 0.3129,
-						r: 2
+						r : 2
 					}, {
 						x : 0.2976,
 						y : 0.3245,
-						r: 2
+						r : 2
 					}],
 					backgroundColor : "#FF6384",
 					hoverBackgroundColor : "#FF6384",
