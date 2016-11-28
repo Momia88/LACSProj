@@ -9,7 +9,7 @@
 		<script src="js/lib/math.min.js"></script>
 
 		<link rel="stylesheet" href="css/jquery-ui.css">
-		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<link rel="stylesheet" type="text/css" href="css/loading.css">
 
 		<style type="text/css">
 			#box {
@@ -119,8 +119,8 @@
 					return;
 				}
 				jsonData = $.ajax({
-					url : 'http://192.168.3.88:8080/LACSProj/api/v1/service/chroma',
-					//url : 'http://localhost:8080/LACSProj/api/v1/service/chroma',
+					//url : 'http://192.168.3.88:8080/LACSProj/api/v1/service/chroma',
+					url : 'http://localhost:8080/LACSProj/api/v1/service/chroma',
 					type : "POST",
 					data : {
 						modelType : mType,
