@@ -1,4 +1,4 @@
-package com.hpbu.lacs;
+package com.hpbu.lacs.model;
 
 public class ChromaObj {
 	private String P_DATE;

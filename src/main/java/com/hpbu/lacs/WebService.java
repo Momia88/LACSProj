@@ -15,6 +15,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.google.gson.Gson;
+import com.hpbu.lacs.model.ChromaObj;
+import com.hpbu.lacs.model.SiteObj;
 
 @Path("/v1/service")
 public class WebService {
@@ -71,32 +73,28 @@ public class WebService {
 		case "white_color_center":
 			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
-					+ "'"
-					+ " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1x5 ORDER BY P_DATE, TIME";
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1x5 ORDER BY P_DATE, TIME";
 			key = "W_T1x5";
 			df = new DecimalFormat("#.####");
 			break;
 		case "red_color_center":
 			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, R_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
-					+ "'"
-					+ " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, R_T1x5 ORDER BY P_DATE, TIME";
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, R_T1x5 ORDER BY P_DATE, TIME";
 			key = "R_T1x5";
 			df = new DecimalFormat("#.####");
 			break;
 		case "green_color_center":
 			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, G_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
-					+ "'"
-					+ " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, G_T1x5 ORDER BY P_DATE, TIME";
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, G_T1x5 ORDER BY P_DATE, TIME";
 			key = "G_T1x5";
 			df = new DecimalFormat("#.####");
 			break;
 		case "blue_color_center":
 			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, B_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
-					+ "'"
-					+ " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, B_T1x5 ORDER BY P_DATE, TIME";
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, B_T1x5 ORDER BY P_DATE, TIME";
 			key = "B_T1x5";
 			df = new DecimalFormat("#.####");
 			break;
@@ -113,54 +111,80 @@ public class WebService {
 			df = new DecimalFormat("#.####");
 			break;
 		default:
-//			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, FLOOR((W_T1YY1 + W_T1YY2 + W_T1YY3 + W_T1YY4 + W_T1YY5 + W_T1YY6 + W_T1YY7 + W_T1YY8 + W_T1YY9)/9) AS W_P9_TOTAL FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
-//					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
-//					+ "'"
-//					+ " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1YY1 , W_T1YY2 , W_T1YY3 , W_T1YY4 , W_T1YY5 , W_T1YY6 , W_T1YY7 , W_T1YY8 , W_T1YY9 ORDER BY P_DATE, TIME";
-//			key = "W_P9_TOTAL";
-//			df = new DecimalFormat("#");
+			// sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN,
+			// FLOOR((W_T1YY1 + W_T1YY2 + W_T1YY3 + W_T1YY4 + W_T1YY5 + W_T1YY6
+			// + W_T1YY7 + W_T1YY8 + W_T1YY9)/9) AS W_P9_TOTAL FROM
+			// SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+			// + "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" +
+			// startTime + "'" + " AND " + "'" + endTime
+			// + "'"
+			// + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1YY1 ,
+			// W_T1YY2 , W_T1YY3 , W_T1YY4 , W_T1YY5 , W_T1YY6 , W_T1YY7 ,
+			// W_T1YY8 , W_T1YY9 ORDER BY P_DATE, TIME";
+			// key = "W_P9_TOTAL";
+			// df = new DecimalFormat("#");
 			break;
 		}
 
-		return getChroma(sqlStr, modelType, startTime, endTime, df, key);
+		return getChromaData(sqlStr, modelType, startTime, endTime, df, key);
 
 	}
 
-	// @POST
-	// @Path("/chroma/mysql")
-	// @Produces("application/json")
-	// public String chromaMysql(@FormParam("modelType") String modelType,
-	// @FormParam("startTime") String startTime,
-	// @FormParam("endTime") String endTime) {
-	//
-	// // Mysql
-	// String sqlStr = "SELECT * FROM SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO =
-	// " + "'" + modelType + "'"
-	// + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" +
-	// endTime + "'"
-	// + " ORDER BY P_DATE, TIME";
-	//
-	// String chroma = getChromaBrightness(sqlStr, modelType, startTime,
-	// endTime);
-	// return chroma;
-	// }
+	// Test
+	@POST
+	@Path("/testerlog")
+	@Produces(MediaType.TEXT_HTML)
+	public String getTesterLog(@FormParam("modelType") String modelType, @FormParam("siteNum") String siteNum,
+			@FormParam("startTime") String startTime, @FormParam("endTime") String endTime) {
+		String sqlStr = "";
+		DecimalFormat df = null;
+		String key = "";
+		// sqlStr = "select SITE_STATE_KEY,SITE_RESULT,WSN,SITE_KEY,RECORD_TIME from SFCS_RD.HPT_SITE_STATE where WSN != 'test' and WSN != 'abcdef' AND P_DATE BETWEEN "
+		//		+ "'" + startTime + "'" + " AND " + "'" + endTime + "'" + " ORDER BY WSN, UPDATE_TIME";
+		sqlStr = "select SITE_STATE_KEY,SITE_RESULT,WSN,SITE_KEY,RECORD_TIME from SFCS_RD.HPT_SITE_STATE where WSN != 'test' and WSN != 'abcdef' AND P_DATE BETWEEN "
+				+ " ORDER BY WSN, UPDATE_TIME";
+		df = new DecimalFormat("#.####");
+		return getLogData(sqlStr, modelType, startTime, endTime, df);
+	}
 
 	// Get Brightness Data from DB
-	public String getChroma(String sqlStr, String modelType, String startTime, String endTime, DecimalFormat df,
+	public String getChromaData(String sqlStr, String modelType, String startTime, String endTime, DecimalFormat df,
 			String key) {
 		// parameter init
 		String chroma = null;
 		ReportObj reportObj = new ReportObj();
 		List<Float> list = new ArrayList<>();
 		ArrayList<ChromaObj> chromaList = new ArrayList<ChromaObj>();
-
 		try {
-
 			ResultSet rs = accessManager.getDBData(sqlStr);
 			chromaList = dataParser.getChromaList(rs, key);
 			for (int i = 0; i < chromaList.size(); i++) {
 				float value = Float.valueOf(chromaList.get(i).getValue());
 				list.add(Float.valueOf(df.format(value)));
+			}
+			reportObj = getReportObj(list, df);
+			Gson gson = new Gson();
+			chroma = gson.toJson(reportObj);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return chroma;
+	}
+
+	// Get Brightness Data from DB
+	public String getLogData(String sqlStr, String modelType, String startTime, String endTime, DecimalFormat df) {
+		// parameter init
+		String chroma = null;
+		ReportObj reportObj = new ReportObj();
+		List<Float> list = new ArrayList<>();
+		ArrayList<SiteObj> logList = new ArrayList<SiteObj>();
+
+		try {
+
+			ResultSet rs = accessManager.getDBData(sqlStr);
+			logList = dataParser.getSiteInfo(rs);
+			for (int i = 0; i < logList.size(); i++) {
+				// print log
 			}
 			reportObj = getReportObj(list, df);
 			Gson gson = new Gson();
@@ -192,6 +216,43 @@ public class WebService {
 	@Path("/status")
 	@Produces(MediaType.TEXT_HTML)
 	public String returnTitle() {
-		return "<p> Java Web Service. Hi~Hi~</p>";
-	}
+		String chroma = null;
+		ReportObj reportObj = new ReportObj();
+		List<String> list = new ArrayList<>();
+		ArrayList<SiteObj> logList = new ArrayList<SiteObj>();
+		String sqlStr = "select SITE_STATE_KEY,SITE_RESULT,WSN,SITE_KEY,RECORD_TIME from SFCS_RD.HPT_SITE_STATE where WSN != 'test' and WSN != 'abcdef'  ORDER BY WSN, RECORD_TIME";
+		DecimalFormat df = new DecimalFormat("#.####");
+		try {
+
+			ResultSet rs = accessManager.getDBData(sqlStr);
+			logList = dataParser.getSiteInfo(rs);
+			for (int i = 0; i < logList.size(); i++) {
+				list.add(logList.get(i).getWSN());
+			}
+			System.out.println(list.toString());
+			Gson gson = new Gson();
+			chroma = gson.toJson(list);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return chroma;
+		}
+
+	// @POST
+	// @Path("/chroma/mysql")
+	// @Produces("application/json")
+	// public String chromaMysql(@FormParam("modelType") String modelType,
+	// @FormParam("startTime") String startTime,
+	// @FormParam("endTime") String endTime) {
+	//
+	// // Mysql
+	// String sqlStr = "SELECT * FROM SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO ="
+	// + "'" + modelType + "'"
+	// + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" +
+	// endTime + "'"
+	// + " ORDER BY P_DATE, TIME";
+	//
+	// String chroma = getMySQLData(sqlStr, modelType, startTime, endTime);
+	// return chroma;
+	// }
 }

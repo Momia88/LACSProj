@@ -8,11 +8,8 @@ import java.util.ArrayList;
 
 public class AccessManager {
 	public ResultSet getDBData(String sqlStr) throws Exception {
-
-		DBConnect dbConnect = new DBConnect();
+		OracleDBConnect dbConnect = new OracleDBConnect();
 		Connection con = dbConnect.getConn();
-		DataParser dataParser = new DataParser();
-		ArrayList<ChromaObj> list = new ArrayList<ChromaObj>();
 		PreparedStatement stmt = (PreparedStatement) con.prepareStatement(sqlStr);
 		ResultSet rs = stmt.executeQuery();
 		return rs;

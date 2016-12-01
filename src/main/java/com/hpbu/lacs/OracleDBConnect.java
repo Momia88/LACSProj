@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DBConnect {
+public class OracleDBConnect {
 	/* Operation Server */
 	String DbSID = "KSSFCS01";
 	String HostName = "KSSFC03-1.coretronic.com";
@@ -27,18 +27,6 @@ public class DBConnect {
 			// System.out.println("DataBase connected : " + conDB.toString());
 			System.out.println("DataBase connected  ");
 			conn.setAutoCommit(false);
-//			Statement stmt = conn.createStatement();
-//			String sqlStr = "SELECT P_DATE, TIME, PRODUCT_SN, ANSI_LUMEN FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW where MODEL_NO = 'DHD850' and P_DATE >= '2016-01-01'";
-//			ResultSet rset = stmt.executeQuery(sqlStr);
-//
-//			while (rset.next())
-//				System.out.println(rset.getString("P_DATE") + " " + rset.getString("TIME") + " " + rset.getString("PRODUCT_SN") + " " + rset.getString("ANSI_LUMEN"));
-//			
-//			String sqlStr2 = "SELECT count(*) FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW where MODEL_NO = 'DHD850' and P_DATE >= '2016-01-01'";
-//			rset = stmt.executeQuery(sqlStr2);
-//			while (rset.next())
-//				System.out.println(rset.getString(1));
-
 		} catch (ClassNotFoundException cnfe) {
 			System.out.println("Driver didn't be load : " + cnfe.toString());
 		} catch (SQLException sqle) {
