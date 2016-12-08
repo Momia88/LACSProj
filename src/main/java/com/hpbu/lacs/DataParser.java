@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.hpbu.lacs.model.ChromaObj;
 import com.hpbu.lacs.model.CommStateObj;
@@ -31,7 +32,7 @@ public class DataParser {
 		return list;
 	}
 
-	public ArrayList<SiteObj> getSiteInfo(ResultSet rs) throws SQLException {
+	public ArrayList<SiteObj> getSiteInfo(ResultSet rs) {
 		ArrayList<SiteObj> list = new ArrayList<>();
 
 		try {
@@ -40,8 +41,22 @@ public class DataParser {
 				siteObj.setWSN(rs.getString("WSN"));
 				siteObj.setSITE_STATE_KEY(rs.getString("SITE_STATE_KEY"));
 				siteObj.setSITE_RESULT(rs.getString("SITE_RESULT"));
+				siteObj.setSITE_KEY(rs.getString("SITE_KEY"));
 				siteObj.setRECORD_TIME(rs.getString("RECORD_TIME"));
 				list.add(siteObj);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	public HashMap<String,String> getCommInfo(ResultSet rs)  {
+		HashMap<String, String> list = new HashMap<>();
+
+		try {
+			while (rs.next()) {
+				list.put(rs.getString("COMMAND_KEY"),rs.getString("COMMAND_NAME"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -54,31 +69,20 @@ public class DataParser {
 
 		try {
 			while (rs.next()) {
+				// Column SITE_STATE_KEY, COMMAND_KEY, COMMAND_STATE_KEY, COMMAND_RESULT, SERIAL_NUM, VALUE, UPDATE_TIME
 				CommStateObj commStateObj = new CommStateObj();
-				commStateObj.setCommKey(rs.getString("COMMAND_KEY"));
-				commStateObj.setCommResult(rs.getString("COMMAND_RESULT"));
-				commStateObj.setCommStateKey(rs.getString("COMMAND_STATE_KEY"));
 				commStateObj.setSiteStateKey(rs.getString("SITE_STATE_KEY"));
+				commStateObj.setCommKey(rs.getString("COMMAND_KEY"));
+				commStateObj.setCommStateKey(rs.getString("COMMAND_STATE_KEY"));
+				commStateObj.setCommResult(rs.getString("COMMAND_RESULT"));
+				commStateObj.setSerialNum(rs.getString("SERIAL_NUM"));
+				commStateObj.setValue(rs.getString("VALUE"));
+				commStateObj.setUpdateTime(rs.getString("UPDATE_TIME"));
 				list.add(commStateObj);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return list;
-	}
-
-	public String getCommResult(ResultSet rs) throws SQLException {
-		String str = "";
-		try {
-			while (rs.next()) {
-				str += rs.getString("VALUE") + ",";
-			}
-			if (str.length() > 0) {
-				str = str.substring(0, str.length() - 1);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return str;
 	}
 }

@@ -32,6 +32,7 @@ public class WebService {
 	private String WSN = "WSN";
 	private String SITE_RESULT = "SITE_RESULT";
 	private String SITE_STATE_KEY = "SITE_STATE_KEY";
+	private String SITE_KEY = "SITE_KEY";
 	private String RECORD_TIME = "RECORD_TIME";
 
 	@POST
@@ -171,6 +172,9 @@ public class WebService {
 	public String getTesterLog(@FormParam("modelType") String modelType, @FormParam("siteNum") String siteNum,
 			@FormParam("startTime") String startTime, @FormParam("endTime") String endTime) {
 		Gson gson = new Gson();
+		// Command Key
+		HashMap<String, String> commKeyPair = new HashMap<>();
+
 		// report obj
 		LogResultObj logResultObj = new LogResultObj();
 		HashMap<String, String> titles = new HashMap<>();
@@ -180,8 +184,9 @@ public class WebService {
 		List<SiteObj> siteList = new ArrayList<SiteObj>();
 		// comm list
 		List<CommStateObj> commStateList = new ArrayList<CommStateObj>();
-
 		DecimalFormat df = new DecimalFormat("#.##");
+		// Get command key pair
+		commKeyPair = getCommKeyPair();
 
 		String str = "select SITE_STATE_KEY,SITE_RESULT,WSN,SITE_KEY,RECORD_TIME,ROW_NUMBER() "
 				+ "Over (Partition By WSN ORDER BY RECORD_TIME DESC) as list from HPT_SITE_STATE WHERE WSN != 'test' AND WSN != 'abcdef' AND RECORD_TIME BETWEEN TO_DATE("
@@ -192,7 +197,6 @@ public class WebService {
 			siteList = dataParser.getSiteInfo(rs);
 			String commStr = "";
 			String resultStr = "";
-			String commResult = "";
 
 			for (SiteObj siteObj : siteList) {
 				HashMap<String, String> record = new HashMap<>();
@@ -203,20 +207,23 @@ public class WebService {
 				titleList = putTitle(titleList, SITE_RESULT);
 				record.put(SITE_RESULT, siteObj.getSITE_RESULT());
 				titleList = putTitle(titleList, RECORD_TIME);
+				record.put(SITE_KEY, siteObj.getSITE_KEY());
+				titleList = putTitle(titleList, SITE_KEY);
 				record.put(RECORD_TIME, siteObj.getRECORD_TIME());
 				// Get Command key
-				commStr = "select * from HPT_COMMAND_STATE where SITE_STATE_KEY = " + "'" + siteObj.getSITE_STATE_KEY()
-						+ "'";
+				commStr = "select * from HPT_COMMAND_STATE_RESULT_VIEW where SITE_STATE_KEY = " + "'"
+						+ siteObj.getSITE_STATE_KEY() + "'";
 				System.out.println(commStr);
 				rs = accessManager.getDBData(commStr);
 				commStateList = dataParser.getCommStateInfo(rs);
 				for (CommStateObj commState : commStateList) {
-					resultStr = "select * from HPT_COMMAND_RESULT where COMMAND_STATE_KEY = " + "'"
-							+ commState.getCommStateKey() + "'";
-					rs = accessManager.getDBData(resultStr);
-					commResult = dataParser.getCommResult(rs);
-					titleList = putTitle(titleList, commState.getCommKey());
-					record.put(commState.getCommKey(), commResult);
+					String keyId = commState.getCommKey();
+					String keyName = commKeyPair.get(keyId);
+					if (Integer.valueOf(commState.getSerialNum()) > 1) {
+						keyName = keyName + "_" + commState.getSerialNum();
+					}
+					record.put(keyName, commState.getValue());
+					titleList = putTitle(titleList, keyName);
 				}
 				recordList.add(record);
 			}
@@ -231,16 +238,28 @@ public class WebService {
 
 	private List<HashMap<String, String>> putTitle(List<HashMap<String, String>> titleList, String key) {
 		for (int i = 0; i < titleList.size(); i++) {
-			if (titleList.get(i).get(key) != null) {
+			if (titleList.get(i).get("field").equals(key)) {
 				return titleList;
 			}
 		}
 		HashMap<String, String> map = new HashMap<>();
 		map.put("field", key);
 		map.put("title", key);
+		System.out.println(key);
 		titleList.add(map);
 		return titleList;
 
+	}
+
+	private HashMap<String, String> getCommKeyPair() {
+		String str = "select * from HPT_COMMAND_INFO";
+		ResultSet rs = null;
+		try {
+			rs = accessManager.getDBData(str);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return dataParser.getCommInfo(rs);
 	}
 
 	private ReportObj getReportObj(List<Float> list, DecimalFormat df) {
