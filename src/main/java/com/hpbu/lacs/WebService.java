@@ -81,32 +81,60 @@ public class WebService {
 			df = new DecimalFormat("#");
 			break;
 
-		case "white_color_center":
-			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+		case "white_color_x":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_W_X FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
-					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, W_T1x5 ORDER BY P_DATE, TIME";
-			key = "W_T1x5";
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_W_X ORDER BY P_DATE, TIME";
+			key = "CHROMATICITY_P5_W_X";
 			df = new DecimalFormat("#.####");
 			break;
-		case "red_color_center":
-			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, R_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+		case "red_color_x":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_R_X FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
-					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, R_T1x5 ORDER BY P_DATE, TIME";
-			key = "R_T1x5";
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_R_X ORDER BY P_DATE, TIME";
+			key = "CHROMATICITY_P5_R_X";
 			df = new DecimalFormat("#.####");
 			break;
-		case "green_color_center":
-			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, G_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+		case "green_color_x":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_G_X FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
-					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, G_T1x5 ORDER BY P_DATE, TIME";
-			key = "G_T1x5";
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_G_X ORDER BY P_DATE, TIME";
+			key = "CHROMATICITY_P5_G_X";
 			df = new DecimalFormat("#.####");
 			break;
-		case "blue_color_center":
-			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, B_T1x5 FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+		case "blue_color_x":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_B_X FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
 					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
-					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, B_T1x5 ORDER BY P_DATE, TIME";
-			key = "B_T1x5";
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_B_X ORDER BY P_DATE, TIME";
+			key = "CHROMATICITY_P5_B_X";
+			df = new DecimalFormat("#.####");
+			break;
+		case "white_color_y":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_W_Y FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_W_Y ORDER BY P_DATE, TIME";
+			key = "CHROMATICITY_P5_W_Y";
+			df = new DecimalFormat("#.####");
+			break;
+		case "red_color_y":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_R_Y FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_R_Y ORDER BY P_DATE, TIME";
+			key = "CHROMATICITY_P5_R_Y";
+			df = new DecimalFormat("#.####");
+			break;
+		case "green_color_y":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_G_Y FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_G_Y ORDER BY P_DATE, TIME";
+			key = "CHROMATICITY_P5_G_Y";
+			df = new DecimalFormat("#.####");
+			break;
+		case "blue_color_y":
+			sqlStr = "SELECT P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_B_Y FROM SFCS.SFCS_RUNCARD_CHROMA_VIEW WHERE MODEL_NO = "
+					+ "'" + modelType + "'" + " AND P_DATE BETWEEN " + "'" + startTime + "'" + " AND " + "'" + endTime
+					+ "'" + " GROUP BY P_DATE, TIME, MODEL_NO, PRODUCT_SN, CHROMATICITY_P5_B_Y ORDER BY P_DATE, TIME";
+			key = "CHROMATICITY_P5_B_Y";
 			df = new DecimalFormat("#.####");
 			break;
 		case "white_color_distribution":
@@ -152,6 +180,9 @@ public class WebService {
 		try {
 			ResultSet rs = accessManager.getDBData(sqlStr);
 			chromaList = dataParser.getChromaList(rs, key);
+			if(chromaList.isEmpty()){
+				return null;
+			}
 			for (int i = 0; i < chromaList.size(); i++) {
 				float value = Float.valueOf(chromaList.get(i).getValue());
 				list.add(Float.valueOf(df.format(value)));
