@@ -50,13 +50,26 @@ public class DataParser {
 		}
 		return list;
 	}
-	
-	public HashMap<String,String> getCommInfo(ResultSet rs)  {
-		HashMap<String, String> list = new HashMap<>();
 
+	public HashMap<String, String> getCommInfo(ResultSet rs) {
+		HashMap<String, String> list = new HashMap<>();
 		try {
+			rs.first();
 			while (rs.next()) {
-				list.put(rs.getString("COMMAND_KEY"),rs.getString("COMMAND_NAME"));
+				list.put(rs.getString("COMMAND_KEY"), rs.getString("COMMAND_NAME"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public HashMap<String, String> getCommDescription(ResultSet rs) {
+		HashMap<String, String> list = new HashMap<>();
+		try {
+			rs.first();
+			while (rs.next()) {
+				list.put(rs.getString("COMMAND_NAME"), rs.getString("DESCRIPTION"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -69,7 +82,8 @@ public class DataParser {
 
 		try {
 			while (rs.next()) {
-				// Column SITE_STATE_KEY, COMMAND_KEY, COMMAND_STATE_KEY, COMMAND_RESULT, SERIAL_NUM, VALUE, UPDATE_TIME
+				// Column SITE_STATE_KEY, COMMAND_KEY, COMMAND_STATE_KEY,
+				// COMMAND_RESULT, SERIAL_NUM, VALUE, UPDATE_TIME
 				CommStateObj commStateObj = new CommStateObj();
 				commStateObj.setSiteStateKey(rs.getString("SITE_STATE_KEY"));
 				commStateObj.setCommKey(rs.getString("COMMAND_KEY"));

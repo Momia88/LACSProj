@@ -1,6 +1,5 @@
 package com.hpbu.lacs;
 
-import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -8,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -18,7 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.hpbu.lacs.model.ChromaObj;
 import com.hpbu.lacs.model.CommStateObj;
 import com.hpbu.lacs.model.LogResultObj;
@@ -180,7 +177,7 @@ public class WebService {
 		try {
 			ResultSet rs = accessManager.getDBData(sqlStr);
 			chromaList = dataParser.getChromaList(rs, key);
-			if(chromaList.isEmpty()){
+			if (chromaList.isEmpty()) {
 				return null;
 			}
 			for (int i = 0; i < chromaList.size(); i++) {
@@ -205,29 +202,43 @@ public class WebService {
 		Gson gson = new Gson();
 		// Command Key
 		HashMap<String, String> commKeyPair = new HashMap<>();
+		HashMap<String, String> commDescripPair = new HashMap<>();
+		HashMap<String, String> commResultPair = new HashMap<>();
+		commKeyPair.clear();
+		commDescripPair.clear();
+		commResultPair.clear();
 
 		// report obj
 		LogResultObj logResultObj = new LogResultObj();
-		HashMap<String, String> titles = new HashMap<>();
 		List<HashMap<String, String>> titleList = new ArrayList<HashMap<String, String>>();
 		List<HashMap<String, String>> recordList = new ArrayList<HashMap<String, String>>();
+
 		// site list
 		List<SiteObj> siteList = new ArrayList<SiteObj>();
 		// comm list
 		List<CommStateObj> commStateList = new ArrayList<CommStateObj>();
-		DecimalFormat df = new DecimalFormat("#.##");
+		// DecimalFormat df = new DecimalFormat("#.##");
 		// Get command key pair
-		commKeyPair = getCommKeyPair();
+		String keyStr = "select * from HPT_COMMAND_KEY_DESCRIPTION";
+		ResultSet rsKey = null;
+		try {
+			rsKey = accessManager.getDBData(keyStr);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		commKeyPair = dataParser.getCommInfo(rsKey);
+		commDescripPair = dataParser.getCommDescription(rsKey);
 
-		String str = "select SITE_STATE_KEY,SITE_RESULT,WSN,SITE_KEY,RECORD_TIME,ROW_NUMBER() "
-				+ "Over (Partition By WSN ORDER BY RECORD_TIME DESC) as list from HPT_SITE_STATE WHERE WSN != 'test' AND WSN != 'abcdef' AND RECORD_TIME BETWEEN TO_DATE("
+		String str = "select MODEL_TYPE,SITE_STATE_KEY,SITE_RESULT,WSN,SITE_KEY,RECORD_TIME,ROW_NUMBER() "
+				+ "Over (Partition By WSN,SITE_KEY,MODEL_TYPE ORDER BY RECORD_TIME DESC) as list from HPT_SITE_WSN_PSN_VIEW WHERE WSN != 'test' AND WSN != 'abcdef' AND RECORD_TIME BETWEEN TO_DATE("
 				+ "'" + startTime + "'" + ",'YYYY-MM-DD')" + " AND TO_DATE(" + "'" + endTime + "'" + ",'YYYY-MM-DD')";
-		String siteStr = "select * from ( " + str + ") where SITE_KEY =" + "'" + siteNum + "'" + " and list =1";
+		String siteStr = "select * from ( " + str + ") where MODEL_TYPE="+ "'" + modelType + "'" + " and SITE_KEY =" + "'" + siteNum + "'" + " and list =1";
+		System.out.println(siteStr);
 		try {
 			ResultSet rs = accessManager.getDBData(siteStr);
 			siteList = dataParser.getSiteInfo(rs);
+			System.out.println("site:" + siteList.size());
 			String commStr = "";
-			String resultStr = "";
 
 			for (SiteObj siteObj : siteList) {
 				HashMap<String, String> record = new HashMap<>();
@@ -254,7 +265,10 @@ public class WebService {
 						keyName = keyName + "_" + commState.getSerialNum();
 					}
 					record.put(keyName, commState.getValue());
-					titleList = putTitle(titleList, keyName);
+					commResultPair.put(keyName, commState.getCommResult());
+					if (keyName != null) {
+						titleList = putTitle(titleList, keyName);
+					}
 				}
 				recordList.add(record);
 			}
@@ -263,34 +277,23 @@ public class WebService {
 		}
 		logResultObj.setTitleList(titleList);
 		logResultObj.setRecordList(recordList);
+		logResultObj.setCommDescriptionPair(commDescripPair);
+		logResultObj.setCommResultPair(commResultPair);
 		System.out.println(gson.toJson(logResultObj));
 		return gson.toJson(logResultObj);
 	}
 
 	private List<HashMap<String, String>> putTitle(List<HashMap<String, String>> titleList, String key) {
 		for (int i = 0; i < titleList.size(); i++) {
-			if (titleList.get(i).get("field").equals(key)) {
+			if (titleList.get(i) == null || titleList.get(i).get("field").equals(key)) {
 				return titleList;
 			}
 		}
 		HashMap<String, String> map = new HashMap<>();
 		map.put("field", key);
 		map.put("title", key);
-		System.out.println(key);
 		titleList.add(map);
 		return titleList;
-
-	}
-
-	private HashMap<String, String> getCommKeyPair() {
-		String str = "select * from HPT_COMMAND_INFO";
-		ResultSet rs = null;
-		try {
-			rs = accessManager.getDBData(str);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return dataParser.getCommInfo(rs);
 	}
 
 	private ReportObj getReportObj(List<Float> list, DecimalFormat df) {
